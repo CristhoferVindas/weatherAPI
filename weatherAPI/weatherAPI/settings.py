@@ -23,6 +23,7 @@ load_dotenv()
 
 OPENWEATHERMAP_API_KEY = os.getenv('OPENWEATHERMAP_API_KEY')
 REDIS_KEY = os.getenv('REDIS_KEY')
+REDIS_LOCATION = os.getenv('REDIS_LOCATION')
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -94,6 +95,21 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://redis-17730.c14.us-east-1-3.ec2.redns.redis-cloud.com:17730',
+        'OPTIONS': {
+            'PASSWORD': REDIS_KEY,
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            'SOCKET_CONNECT_TIMEOUT': 5,
+            'SOCKET_TIMEOUT': 5,
+        }
+    }
+}
+
 
 
 # Password validation
