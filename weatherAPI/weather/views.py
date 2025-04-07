@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import WeatherSerializer
 from django.conf import settings
+import datetime
 
 # Create your views here.
 class WeatherAPIView(APIView):
@@ -57,3 +58,37 @@ class ForecastAPIView(APIView):
             })
 
         return Response(forecast_data)
+class HistoricalWeatherAPIView(APIView):
+    def get(self, request, city_name, date):
+        api_key = settings.OPENWEATHERMAP_API_KEY
+
+        geo_url = f'http://api.openweathermap.org/data/2.5/weather?q={city_name}&appid={api_key}'
+        geo_response = requests.get(geo_url)
+        geo_data = geo_response.json()
+
+        if geo_data.get("cod") != 200:
+            return Response({"error": "Ciudad no encontrada"}, status=404)
+
+        lat = geo_data['coord']['lat']
+        lon = geo_data['coord']['lon']
+
+        timestamp = int(datetime.datetime.strptime(date, '%Y-%m-%d').timestamp())
+
+        url = f'http://api.openweathermap.org/data/2.5/onecall/timemachine?lat={lat}&lon={lon}&dt={timestamp}&appid={api_key}'
+
+        response = requests.get(url)
+        data = response.json()
+
+        if "current" not in data:
+            return Response({"error": "Datos históricos no encontrados"}, status=404)
+
+        historical_data = {
+            "city": city_name,
+            "date": date,
+            "temperature": data["current"]["temp"],
+            "description": data["current"]["weather"][0]["description"],
+            "humidity": data["current"]["humidity"],
+            "pressure": data["current"]["pressure"]
+        }
+
+        return Response(historical_data)
