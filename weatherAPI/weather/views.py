@@ -35,3 +35,25 @@ class WeatherAPIView(APIView):
         serializer = WeatherSerializer(weather_data)
         return Response(serializer.data)
 
+class ForecastAPIView(APIView):
+    def get(self, request, city_name):
+        api_key = settings.OPENWEATHERMAP_API_KEY
+        url = f'http://api.openweathermap.org/data/2.5/forecast?q={city_name}&appid={api_key}&units=metric'
+
+        response = requests.get(url)
+        data = response.json()
+
+        if data.get("cod") != "200":
+            return Response({"error": data.get("message", "Ciudad no encontrada")}, status=404)
+
+        forecast_data = []
+        for entry in data["list"]:
+            forecast_data.append({
+                "date": entry["dt_txt"],
+                "temperature": entry["main"]["temp"],
+                "description": entry["weather"][0]["description"],
+                "humidity": entry["main"]["humidity"],
+                "pressure": entry["main"]["pressure"]
+            })
+
+        return Response(forecast_data)
