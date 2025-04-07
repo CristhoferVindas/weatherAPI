@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8" />
+		<title>API del Clima 🌦️</title>
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				margin: 2rem;
+				background: #f4f4f4;
+			}
+			h1 {
+				color: #333;
+			}
+			.endpoint {
+				margin-bottom: 2rem;
+				background: white;
+				padding: 1rem;
+				border-radius: 10px;
+				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+			}
+			label {
+				display: block;
+				margin-top: 0.5rem;
+			}
+			input {
+				padding: 0.5rem;
+				width: 100%;
+				max-width: 300px;
+			}
+			button {
+				margin-top: 0.5rem;
+				padding: 0.5rem 1rem;
+				cursor: pointer;
+			}
+			pre {
+				background: #eee;
+				padding: 1rem;
+				overflow-x: auto;
+				white-space: pre-wrap;
+				border-radius: 5px;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>🌍 API del Clima - Bienvenido</h1>
+		<p>Consulta datos del clima actual, pronósticos y más usando nuestros endpoints REST.</p>
+
+		<!-- Endpoint 1: Clima actual por ciudad -->
+		<div class="endpoint">
+			<h2>Clima actual por ciudad</h2>
+			<label for="city">Ciudad:</label>
+			<input type="text" id="city" placeholder="Ej. San Jose" />
+			<button onclick="getWeather()">Consultar</button>
+			<pre id="weatherResult"></pre>
+		</div>
+
+		<!-- Endpoint 2: Pronóstico -->
+		<div class="endpoint">
+			<h2>Pronóstico por ciudad</h2>
+			<label for="forecastCity">Ciudad:</label>
+			<input type="text" id="forecastCity" placeholder="Ej. San Jose" />
+			<button onclick="getForecast()">Consultar</button>
+			<pre id="forecastResult"></pre>
+		</div>
+
+		<!-- Endpoint 3: Clima por coordenadas -->
+		<div class="endpoint">
+			<h2>Clima por coordenadas</h2>
+			<label for="lat">Latitud:</label>
+			<input type="text" id="lat" placeholder="Ej. 9.9281" />
+			<label for="lon">Longitud:</label>
+			<input type="text" id="lon" placeholder="Ej. -84.0907" />
+			<button onclick="getByCoordinates()">Consultar</button>
+			<pre id="coordsResult"></pre>
+		</div>
+
+		<!-- Endpoint 4: Múltiples ciudades -->
+		<div class="endpoint">
+			<h2>Clima de múltiples ciudades</h2>
+			<label for="multiCities">Ciudades (separadas por guión):</label>
+			<input type="text" id="multiCities" placeholder="Ej. SanJose-Heredia-Cartago" />
+			<button onclick="getMultipleCities()">Consultar</button>
+			<pre id="multiResult"></pre>
+		</div>
+
+		<script>
+			const baseUrl = '/api'; // ajusta si es diferente
+
+			function getWeather() {
+				const city = document.getElementById('city').value;
+				fetch(`${baseUrl}/weather/${city}/`)
+					.then((res) => res.json())
+					.then(
+						(data) => (document.getElementById('weatherResult').textContent = JSON.stringify(data, null, 2))
+					);
+			}
+
+			function getForecast() {
+				const city = document.getElementById('forecastCity').value;
+				fetch(`${baseUrl}/forecast/${city}/`)
+					.then((res) => res.json())
+					.then(
+						(data) => (document.getElementById('forecastResult').textContent = JSON.stringify(data, null, 2))
+					);
+			}
+
+			function getByCoordinates() {
+				const lat = document.getElementById('lat').value;
+				const lon = document.getElementById('lon').value;
+				fetch(`${baseUrl}/weather/coordinates/${lat}/${lon}/`)
+					.then((res) => res.json())
+					.then(
+						(data) => (document.getElementById('coordsResult').textContent = JSON.stringify(data, null, 2))
+					);
+			}
+
+			function getMultipleCities() {
+				const cities = document.getElementById('multiCities').value;
+				fetch(`${baseUrl}/weather/multiple/${cities}/`)
+					.then((res) => res.json())
+					.then(
+						(data) => (document.getElementById('multiResult').textContent = JSON.stringify(data, null, 2))
+					);
+			}
+		</script>
+	</body>
+</html>

@@ -5,7 +5,10 @@ from rest_framework.views import APIView
 from .serializers import WeatherSerializer
 from django.conf import settings
 import datetime
+from django.shortcuts import render
 
+def index(request):
+    return render(request, 'index.html')
 class WeatherAPIView(APIView):
     def get(self, request, city_name):
         cached_data = cache.get(city_name)
