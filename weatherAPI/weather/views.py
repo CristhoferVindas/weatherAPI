@@ -141,3 +141,27 @@ class MultipleCitiesWeatherAPIView(APIView):
                 weather_data_list.append(weather_data)
 
         return Response(weather_data_list)
+
+class WeatherWithUnitsAPIView(APIView):
+    def get(self, request, city_name, unit):
+        api_key = settings.OPENWEATHERMAP_API_KEY
+        if unit not in ['metric', 'imperial', 'standard']:
+            return Response({"error": "Unidad no válida"}, status=400)
+
+        url = f'http://api.openweathermap.org/data/2.5/weather?q={city_name}&appid={api_key}&units={unit}'
+
+        response = requests.get(url)
+        data = response.json()
+
+        if data.get("cod") != 200:
+            return Response({"error": "Ciudad no encontrada"}, status=404)
+
+        weather_data = {
+            "city": data["name"],
+            "temperature": data["main"]["temp"],
+            "description": data["weather"][0]["description"],
+            "humidity": data["main"]["humidity"],
+            "pressure": data["main"]["pressure"]
+        }
+
+        return Response(weather_data)
