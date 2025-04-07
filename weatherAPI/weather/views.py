@@ -92,3 +92,26 @@ class HistoricalWeatherAPIView(APIView):
         }
 
         return Response(historical_data)
+class WeatherByCoordinatesAPIView(APIView):
+    def get(self, request, lat, lon):
+        if not lat or not lon:
+            return Response({"error": "Se requieren latitud y longitud."}, status=400)
+
+        api_key = settings.OPENWEATHERMAP_API_KEY
+        url = f'http://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units=metric'
+
+        response = requests.get(url)
+        data = response.json()
+
+        if data.get("cod") != 200:
+            return Response({"error": data.get("message", "Datos no encontrados")}, status=404)
+
+        weather_data = {
+            "city": data["name"],
+            "temperature": data["main"]["temp"],
+            "description": data["weather"][0]["description"],
+            "humidity": data["main"]["humidity"],
+            "pressure": data["main"]["pressure"]
+        }
+
+        return Response(weather_data)
