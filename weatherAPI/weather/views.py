@@ -1,4 +1,3 @@
-from django.shortcuts import render
 import requests
 from django.core.cache import cache
 from rest_framework.response import Response
@@ -7,7 +6,6 @@ from .serializers import WeatherSerializer
 from django.conf import settings
 import datetime
 
-# Create your views here.
 class WeatherAPIView(APIView):
     def get(self, request, city_name):
         cached_data = cache.get(city_name)
